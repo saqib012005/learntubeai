@@ -1,3 +1,4 @@
+
 import { create } from 'zustand';
 import {
   generateSummaryAction,
@@ -124,7 +125,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
           const exhaustiveCheck: never = feature;
           throw new Error(`Invalid feature: ${exhaustiveCheck}`);
       }
-    } catch (e: any)      set((state) => ({ error: { ...state.error, [feature]: e.message || `Failed to generate ${feature}.` } }));
+    } catch (e: any) {
+      set((state) => ({ error: { ...state.error, [feature]: e.message || `Failed to generate ${feature}.` } }));
     } finally {
       set((state) => ({ isLoading: { ...state.isLoading, [feature]: false } }));
     }
