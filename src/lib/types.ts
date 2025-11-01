@@ -22,7 +22,7 @@ export type AppStore = {
   summary: string;
   flashcards: Flashcard[];
   quiz: string;
-c  timeline: TimelineEvent[];
+  timeline: TimelineEvent[];
   explanation: string;
   chatHistory: ChatMessage[];
   isFetchingTranscript: boolean;

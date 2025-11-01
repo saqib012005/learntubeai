@@ -19,12 +19,10 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <UrlInputForm />
           {error.transcript && <p className="text-destructive text-sm mt-2">{error.transcript}</p>}
-
-          {(isFetchingTranscript || transcript) && (
-            <div className="mt-8">
-              <TranscriptEditor />
-            </div>
-          )}
+          
+          <div className="mt-8">
+            <TranscriptEditor />
+          </div>
 
           {isFetchingTranscript && (
              <div className="mt-8 space-y-4">
