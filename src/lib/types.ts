@@ -13,10 +13,11 @@ export type ChatMessage = {
   content: string;
 };
 
-type Feature = 'summary' | 'flashcards' | 'quiz' | 'timeline' | 'explanation';
+export type Feature = 'summary' | 'flashcards' | 'quiz' | 'timeline' | 'explanation';
 
 export type AppStore = {
   // State
+  youtubeUrl: string;
   transcript: string;
   summary: string;
   flashcards: Flashcard[];
@@ -24,11 +25,14 @@ export type AppStore = {
   timeline: TimelineEvent[];
   explanation: string;
   chatHistory: ChatMessage[];
+  isFetchingTranscript: boolean;
   isLoading: { [key in Feature | 'chat']: boolean };
   error: { [key in Feature | 'transcript' | 'chat']: string | null };
 
   // Actions
+  setYoutubeUrl: (url: string) => void;
   setTranscript: (transcript: string) => void;
   generateFeature: (feature: Feature, text?: string) => Promise<void>;
+  generateAllFeatures: () => Promise<void>;
   sendChatMessage: (message: string) => Promise<void>;
 };

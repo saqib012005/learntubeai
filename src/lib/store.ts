@@ -12,10 +12,14 @@ import type {
   TimelineEvent,
   ChatMessage,
   AppStore,
+  Feature,
 } from '@/lib/types';
+
+const allFeatures: Feature[] = ['summary', 'explanation', 'flashcards', 'quiz', 'timeline'];
 
 export const useAppStore = create<AppStore>((set, get) => ({
   // STATE
+  youtubeUrl: '',
   transcript: '',
   summary: '',
   flashcards: [],
@@ -43,6 +47,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
   },
 
   // ACTIONS
+  setYoutubeUrl: (youtubeUrl) => set({ youtubeUrl }),
   setTranscript: (transcript) => set({ transcript }),
 
   generateFeature: async (feature, text) => {
@@ -81,6 +86,33 @@ export const useAppStore = create<AppStore>((set, get) => ({
     } finally {
       set({ isLoading: { ...get().isLoading, [feature]: false } });
     }
+  },
+
+  generateAllFeatures: async () => {
+    const { transcript } = get();
+    if (!transcript) return;
+    
+    // Reset previous outputs
+    set({
+      summary: '',
+      flashcards: [],
+      quiz: '',
+      timeline: [],
+      explanation: '',
+      error: {
+        transcript: null,
+        summary: null,
+        flashcards: null,
+        quiz: null,
+        timeline: null,
+        explanation: null,
+        chat: null,
+      }
+    });
+
+    allFeatures.forEach(feature => {
+      get().generateFeature(feature);
+    });
   },
 
   sendChatMessage: async (message) => {
