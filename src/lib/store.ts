@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import {
-  getTranscript,
   generateSummaryAction,
   generateFlashcardsAction,
   generateQuizAction,
@@ -17,7 +16,6 @@ import type {
 
 export const useAppStore = create<AppStore>((set, get) => ({
   // STATE
-  videoUrl: '',
   transcript: '',
   summary: '',
   flashcards: [],
@@ -45,20 +43,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
   },
 
   // ACTIONS
-  setVideoUrl: (url) => set({ videoUrl: url }),
   setTranscript: (transcript) => set({ transcript }),
-
-  fetchTranscript: async (url) => {
-    set({ isFetchingTranscript: true, transcript: '', error: { ...get().error, transcript: null } });
-    try {
-      const transcript = await getTranscript(url);
-      set({ transcript });
-    } catch (e: any) {
-      set({ error: { ...get().error, transcript: e.message || 'Failed to fetch transcript.' } });
-    } finally {
-      set({ isFetchingTranscript: false });
-    }
-  },
 
   generateFeature: async (feature, text) => {
     set({ isLoading: { ...get().isLoading, [feature]: true }, error: { ...get().error, [feature]: null } });

@@ -18,32 +18,6 @@ import {
 import {
   chatReply,
 } from '@/ai/flows/ai-chat-tutor';
-import { YoutubeTranscript } from 'youtube-transcript';
-
-export async function getTranscript(url: string): Promise<string> {
-  console.log(`Fetching transcript for URL: ${url}`);
-  if (!url || (!url.includes('youtube.com/watch?v=') && !url.includes('youtu.be/'))) {
-    throw new Error('Invalid YouTube URL provided.');
-  }
-
-  try {
-    const transcript = await YoutubeTranscript.fetchTranscript(url);
-    if (!transcript || transcript.length === 0) {
-      throw new Error('No transcript found for this video. It might be disabled or not have subtitles.');
-    }
-    // Format the transcript with timestamps.
-    return transcript.map(item => `(${(item.offset / 1000).toFixed(2)}) - ${item.text}`).join('\n');
-  } catch (error: any) {
-    console.error('Error fetching transcript:', error);
-    if (error.message.includes('disabled')) {
-       throw new Error('Transcript is disabled for this video.');
-    }
-    if (error.message.includes('No transcript found')) {
-      throw new Error('No transcript could be found for this video. Please ensure it has subtitles.');
-    }
-    throw new Error('Failed to fetch transcript from YouTube.');
-  }
-}
 
 export async function generateSummaryAction(text: string) {
   return await summarizeLecture({ text });
