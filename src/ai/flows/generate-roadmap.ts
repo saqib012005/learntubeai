@@ -34,6 +34,7 @@ const prompt = ai.definePrompt({
   - Explain complex concepts as you would to a 10-year-old.
   - All topics must be in a logical, chronological order.
   - For each chapter, suggest relevant YouTube video links, practice tasks, and estimate the time required.
+  - Also for each chapter, generate a few flashcards (question and answer) and a few multiple-choice quiz questions.
   - Include ideas for a final project to apply the learned skills.
   - Suggest a revision plan.
   - Provide a list of supplementary resources like books, cheat sheets, and practice websites.

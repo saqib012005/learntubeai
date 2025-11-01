@@ -19,9 +19,9 @@ import {
   askDoubt,
 } from '@/ai/flows/ai-chat-tutor';
 import { generateRoadmap } from '@/ai/flows/generate-roadmap';
-import type { ChatMessage, Roadmap } from '@/lib/types';
+import type { ChatMessage, Roadmap, Doubt, TimelineEvent } from '@/lib/types';
 
-export async function generateSummaryAction(text: string) {
+export async function generateSummaryAction(text: string): Promise<{ summary: string }> {
   return await summarizeLecture({ text });
 }
 
@@ -29,24 +29,24 @@ export async function generateFlashcardsAction(text: string) {
   return await createFlashcards({ text });
 }
 
-export async function generateQuizAction(text: string) {
+export async function generateQuizAction(text: string): Promise<string> {
   const result = await generateQuiz({ text });
   return result.quiz;
 }
 
-export async function generateTimelineAction(text: string) {
+export async function generateTimelineAction(text: string): Promise<TimelineEvent[]> {
   return await timelineHighlights(text);
 }
 
-export async function generateELI5Action(text: string) {
+export async function generateELI5Action(text: string): Promise<{ explanation: string }> {
   return await explainSimply({ text });
 }
 
 export async function getChatReplyAction(
-  history: ChatMessage[],
+  history: {role: 'user' | 'assistant', content: string}[],
   message: string,
   transcript: string
-) {
+): Promise<Doubt> {
   return await askDoubt({ history, message, transcript });
 }
 

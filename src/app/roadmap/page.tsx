@@ -5,7 +5,7 @@ import AppHeader from '@/components/app/header';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useAppStore } from '@/lib/store';
-import { ArrowRight, Book, Bot, CheckSquare, ChevronDown, ChevronRight, FileText, FlaskConical, Lightbulb, ListTodo, Milestone } from 'lucide-react';
+import { ArrowRight, Book, FlaskConical, ListTodo, Milestone } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Skeleton } from '@/components/ui/skeleton';

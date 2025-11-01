@@ -59,40 +59,49 @@ export const useAppStore = create<AppStore>((set, get) => ({
   setRoadmapTopic: (topic) => set({ roadmapTopic: topic }),
 
   generateFeature: async (feature, text) => {
-    set({ isLoading: { ...get().isLoading, [feature]: true }, error: { ...get().error, [feature]: null } });
+    set((state) => ({ 
+      isLoading: { ...state.isLoading, [feature]: true }, 
+      error: { ...state.error, [feature]: null } 
+    }));
     try {
       const transcriptToUse = text || get().transcript;
       if (!transcriptToUse) throw new Error('No transcript available.');
 
-      let result: any;
       switch (feature) {
-        case 'summary':
-          result = await generateSummaryAction(transcriptToUse);
+        case 'summary': {
+          const result = await generateSummaryAction(transcriptToUse);
           set({ summary: result.summary });
           break;
-        case 'flashcards':
-          result = await generateFlashcardsAction(transcriptToUse);
+        }
+        case 'flashcards': {
+          const result = await generateFlashcardsAction(transcriptToUse);
           set({ flashcards: result.flashcards });
           break;
-        case 'quiz':
-          result = await generateQuizAction(transcriptToUse);
+        }
+        case 'quiz': {
+          const result = await generateQuizAction(transcriptToUse);
           set({ quiz: result });
           break;
-        case 'timeline':
-          result = await generateTimelineAction(transcriptToUse);
+        }
+        case 'timeline': {
+          const result = await generateTimelineAction(transcriptToUse);
           set({ timeline: result });
           break;
-        case 'explanation':
-          result = await generateELI5Action(transcriptToUse);
+        }
+        case 'explanation': {
+          const result = await generateELI5Action(transcriptToUse);
           set({ explanation: result.explanation });
           break;
+        }
         default:
-          throw new Error('Invalid feature');
+          // This should not be reached if 'feature' is of type Feature
+          const exhaustiveCheck: never = feature;
+          throw new Error(`Invalid feature: ${exhaustiveCheck}`);
       }
     } catch (e: any) {
-      set({ error: { ...get().error, [feature]: e.message || `Failed to generate ${feature}.` } });
+      set((state) => ({ error: { ...state.error, [feature]: e.message || `Failed to generate ${feature}.` } }));
     } finally {
-      set({ isLoading: { ...get().isLoading, [feature]: false } });
+      set((state) => ({ isLoading: { ...state.isLoading, [feature]: false } }));
     }
   },
 
@@ -101,23 +110,22 @@ export const useAppStore = create<AppStore>((set, get) => ({
     if (!transcript) return;
     
     // Reset previous outputs
-    set({
+    set((state) => ({
       summary: '',
       flashcards: [],
       quiz: '',
       timeline: [],
       explanation: '',
       error: {
-        transcript: null,
+        ...state.error,
         summary: null,
         flashcards: null,
         quiz: null,
         timeline: null,
         explanation: null,
         chat: null,
-        roadmap: get().error.roadmap,
       }
-    });
+    }));
 
     allFeatures.forEach(feature => {
       get().generateFeature(feature);
