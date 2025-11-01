@@ -1,8 +1,3 @@
-// IMPORTANT: This file is a mock for fetching YouTube transcripts.
-// In a real-world application, you would use a library like 'youtube-transcript'
-// or a dedicated API to fetch the actual transcript data.
-// For demonstration purposes, this file returns a pre-defined sample transcript.
-
 'use server';
 
 import {
@@ -23,33 +18,31 @@ import {
 import {
   chatReply,
 } from '@/ai/flows/ai-chat-tutor';
-
-const sampleTranscript = `
-(0:00) - Welcome to our series on the wonders of the cosmos. Today, we're diving into black holes.
-(0:15) - A black hole is a region of spacetime where gravity is so strong that nothing, not even light, can escape.
-(0:35) - This is due to matter being squeezed into a tiny space. This can happen when a star is dying.
-(1:05) - There are four main types of black holes: stellar, intermediate, supermassive, and miniature.
-(1:30) - Stellar black holes are the most common, formed from the gravitational collapse of a massive star.
-(2:00) - Supermassive black holes are found at the center of most galaxies, including our own Milky Way. Sagittarius A* is our galaxy's supermassive black hole.
-(2:45) - The edge of a black hole is called the event horizon. It's the point of no return.
-(3:15) - Despite their name, black holes are not empty space. They contain a huge amount of matter packed densely.
-(3:40) - Studying black holes helps us understand the fundamental laws of physics and the evolution of the universe.
-(4:10) - Thank you for joining us. Next time, we'll explore the mysteries of dark matter.
-`;
+import { YoutubeTranscript } from 'youtube-transcript';
 
 export async function getTranscript(url: string): Promise<string> {
-  // Mock fetching logic
   console.log(`Fetching transcript for URL: ${url}`);
-  // Basic URL validation
   if (!url || (!url.includes('youtube.com/watch?v=') && !url.includes('youtu.be/'))) {
     throw new Error('Invalid YouTube URL provided.');
   }
 
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(sampleTranscript);
-    }, 1000);
-  });
+  try {
+    const transcript = await YoutubeTranscript.fetchTranscript(url);
+    if (!transcript || transcript.length === 0) {
+      throw new Error('No transcript found for this video. It might be disabled.');
+    }
+    // Format the transcript with timestamps.
+    return transcript.map(item => `(${(item.offset / 1000).toFixed(2)}) - ${item.text}`).join('\n');
+  } catch (error: any) {
+    console.error('Error fetching transcript:', error);
+    if (error.message.includes('disabled')) {
+       throw new Error('Transcript is disabled for this video.');
+    }
+    if (error.message.includes('No transcript found')) {
+      throw new Error('No transcript could be found for this video. Please ensure it has subtitles.');
+    }
+    throw new Error('Failed to fetch transcript from YouTube.');
+  }
 }
 
 export async function generateSummaryAction(text: string) {
