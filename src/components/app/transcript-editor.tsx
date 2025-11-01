@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 export default function TranscriptEditor() {
-  const { transcript, setTranscript, generateFeature, isLoading } = useAppStore();
+  const { transcript, setTranscript, generateFeature, isLoading, isFetchingTranscript } = useAppStore();
   const { toast } = useToast();
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [selectedText, setSelectedText] = useState('');
@@ -58,9 +58,10 @@ export default function TranscriptEditor() {
           value={transcript}
           onChange={(e) => setTranscript(e.target.value)}
           className="min-h-[250px] text-base leading-relaxed"
-          placeholder="Your video transcript will appear here..."
+          placeholder="Your video transcript will appear here, or you can paste your own."
           onMouseUp={handleMouseUp}
           onBlur={() => setTimeout(() => setPopoverOpen(false), 200)}
+          disabled={isFetchingTranscript}
         />
         <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
           <PopoverTrigger asChild>
@@ -90,10 +91,10 @@ export default function TranscriptEditor() {
       </div>
 
       <div className="flex gap-2">
-        <Button variant="outline" onClick={handleDownload}>
+        <Button variant="outline" onClick={handleDownload} disabled={!transcript || isFetchingTranscript}>
           <Download className="mr-2" /> Download
         </Button>
-        <Button variant="outline" onClick={handleCopy}>
+        <Button variant="outline" onClick={handleCopy} disabled={!transcript || isFetchingTranscript}>
           <Copy className="mr-2" /> Copy
         </Button>
       </div>

@@ -20,6 +20,12 @@ export default function Home() {
           <UrlInputForm />
           {error.transcript && <p className="text-destructive text-sm mt-2">{error.transcript}</p>}
 
+          {(isFetchingTranscript || transcript) && (
+            <div className="mt-8">
+              <TranscriptEditor />
+            </div>
+          )}
+
           {isFetchingTranscript && (
              <div className="mt-8 space-y-4">
               <div className="animate-pulse bg-muted rounded-md h-8 w-1/4"></div>
@@ -29,7 +35,6 @@ export default function Home() {
 
           {transcript && !isFetchingTranscript && (
             <div className="mt-8">
-              <TranscriptEditor />
               <Separator className="my-8" />
               <FeatureButtons />
               <OutputSection />
