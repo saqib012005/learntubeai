@@ -19,7 +19,8 @@ import {
   askDoubt,
 } from '@/ai/flows/ai-chat-tutor';
 import { generateRoadmap } from '@/ai/flows/generate-roadmap';
-import type { ChatMessage, Roadmap, Doubt, TimelineEvent } from '@/lib/types';
+import { analyzeImage } from '@/ai/flows/analyze-image';
+import type { Roadmap, Doubt, TimelineEvent } from '@/lib/types';
 
 export async function generateSummaryAction(text: string): Promise<{ summary: string }> {
   return await summarizeLecture({ text });
@@ -52,4 +53,9 @@ export async function getChatReplyAction(
 
 export async function generateRoadmapAction(topic: string): Promise<Roadmap> {
     return await generateRoadmap({ topic });
+}
+
+export async function analyzeImageAction(question: string, imageDataUri: string) {
+  const result = await analyzeImage({ question, imageDataUri });
+  return result.answer;
 }

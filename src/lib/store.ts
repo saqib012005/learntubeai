@@ -7,6 +7,7 @@ import {
   generateELI5Action,
   getChatReplyAction,
   generateRoadmapAction,
+  analyzeImageAction,
 } from '@/app/actions';
 import type {
   Flashcard,
@@ -32,6 +33,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
   chatHistory: [],
   roadmapTopic: '',
   roadmap: null,
+  capturedFrame: null,
+  imageAnalysisQuestion: '',
+  imageAnalysisAnswer: '',
   isFetchingTranscript: false,
   isLoading: {
     summary: false,
@@ -41,6 +45,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
     explanation: false,
     chat: false,
     roadmap: false,
+    imageAnalysis: false,
   },
   error: {
     transcript: null,
@@ -51,12 +56,34 @@ export const useAppStore = create<AppStore>((set, get) => ({
     explanation: null,
     chat: null,
     roadmap: null,
+    imageAnalysis: null,
   },
 
   // ACTIONS
   setYoutubeUrl: (youtubeUrl) => set({ youtubeUrl }),
   setTranscript: (transcript) => set({ transcript }),
   setRoadmapTopic: (topic) => set({ roadmapTopic: topic }),
+  setCapturedFrame: (frame) => set({ capturedFrame: frame }),
+  setImageAnalysisQuestion: (question) => set({ imageAnalysisQuestion: question }),
+
+  analyzeFrame: async () => {
+    const { capturedFrame, imageAnalysisQuestion } = get();
+    if (!capturedFrame || !imageAnalysisQuestion) return;
+
+    set((state) => ({ 
+      isLoading: { ...state.isLoading, imageAnalysis: true }, 
+      error: { ...state.error, imageAnalysis: null },
+      imageAnalysisAnswer: '',
+    }));
+    try {
+      const answer = await analyzeImageAction(imageAnalysisQuestion, capturedFrame);
+      set({ imageAnalysisAnswer: answer });
+    } catch (e: any) {
+      set((state) => ({ error: { ...state.error, imageAnalysis: e.message || 'Failed to analyze frame.' } }));
+    } finally {
+      set((state) => ({ isLoading: { ...state.isLoading, imageAnalysis: false } }));
+    }
+  },
 
   generateFeature: async (feature, text) => {
     set((state) => ({ 
@@ -94,12 +121,10 @@ export const useAppStore = create<AppStore>((set, get) => ({
           break;
         }
         default:
-          // This should not be reached if 'feature' is of type Feature
           const exhaustiveCheck: never = feature;
           throw new Error(`Invalid feature: ${exhaustiveCheck}`);
       }
-    } catch (e: any) {
-      set((state) => ({ error: { ...state.error, [feature]: e.message || `Failed to generate ${feature}.` } }));
+    } catch (e: any)      set((state) => ({ error: { ...state.error, [feature]: e.message || `Failed to generate ${feature}.` } }));
     } finally {
       set((state) => ({ isLoading: { ...state.isLoading, [feature]: false } }));
     }
@@ -109,7 +134,6 @@ export const useAppStore = create<AppStore>((set, get) => ({
     const { transcript } = get();
     if (!transcript) return;
     
-    // Reset previous outputs
     set((state) => ({
       summary: '',
       flashcards: [],

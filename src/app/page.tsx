@@ -7,13 +7,39 @@ import OutputSection from '@/components/app/output-section';
 import { useAppStore } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Camera, Image as ImageIcon, Send } from 'lucide-react';
 import ChatPanel from '@/components/app/chat-panel';
+import VideoPlayer from '@/components/app/video-player';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import Image from 'next/image';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Home() {
-  const { transcript, generateAllFeatures, isLoading, youtubeUrl, setYoutubeUrl } = useAppStore();
+  const { 
+    transcript, 
+    generateAllFeatures, 
+    isLoading, 
+    youtubeUrl, 
+    setYoutubeUrl,
+    capturedFrame,
+    setCapturedFrame,
+    imageAnalysisQuestion,
+    setImageAnalysisQuestion,
+    analyzeFrame,
+    imageAnalysisAnswer
+  } = useAppStore();
 
   const isGenerating = Object.values(isLoading).some(val => val);
+
+  const handleFrameCapture = (dataUri: string) => {
+    setCapturedFrame(dataUri);
+  }
+
+  const handleAnalyze = () => {
+    if (capturedFrame && imageAnalysisQuestion) {
+      analyzeFrame();
+    }
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -38,6 +64,41 @@ export default function Home() {
               />
             </div>
             
+            {youtubeUrl && (
+              <VideoPlayer 
+                url={youtubeUrl} 
+                onFrameCapture={handleFrameCapture}
+              />
+            )}
+
+            {capturedFrame && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><ImageIcon /> Analyze Frame</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Image src={capturedFrame} alt="Captured frame" width={640} height={360} className="rounded-lg w-full" />
+                  <div className="flex gap-2">
+                    <Input 
+                      placeholder="Ask a question about this frame..."
+                      value={imageAnalysisQuestion}
+                      onChange={(e) => setImageAnalysisQuestion(e.target.value)}
+                      disabled={isLoading.imageAnalysis}
+                    />
+                    <Button onClick={handleAnalyze} disabled={isLoading.imageAnalysis || !imageAnalysisQuestion}>
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  {isLoading.imageAnalysis && <Skeleton className="h-8 w-full" />}
+                  {imageAnalysisAnswer && (
+                    <div className="p-4 bg-muted rounded-lg text-sm">
+                      {imageAnalysisAnswer}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
             <div>
                <label htmlFor="video-transcript" className="block text-sm font-medium mb-2">Video Transcript</label>
               <TranscriptEditor />
@@ -61,7 +122,6 @@ export default function Home() {
               <ChatPanel />
             </>
           )}
-
 
           <OutputSection />
         </div>

@@ -77,9 +77,12 @@ export type AppStore = {
   chatHistory: ChatMessage[];
   roadmapTopic: string;
   roadmap: Roadmap | null;
+  capturedFrame: string | null;
+  imageAnalysisQuestion: string;
+  imageAnalysisAnswer: string;
   isFetchingTranscript: boolean;
-  isLoading: { [key in Feature | 'chat' | 'roadmap']: boolean };
-  error: { [key in Feature | 'transcript' | 'chat' | 'roadmap']: string | null };
+  isLoading: { [key in Feature | 'chat' | 'roadmap' | 'imageAnalysis']: boolean };
+  error: { [key in Feature | 'transcript' | 'chat' | 'roadmap' | 'imageAnalysis']: string | null };
 
   // Actions
   setYoutubeUrl: (url: string) => void;
@@ -89,4 +92,7 @@ export type AppStore = {
   sendChatMessage: (message: string) => Promise<void>;
   setRoadmapTopic: (topic: string) => void;
   generateRoadmap: (topic: string) => Promise<void>;
+  setCapturedFrame: (frame: string | null) => void;
+  setImageAnalysisQuestion: (question: string) => void;
+  analyzeFrame: () => Promise<void>;
 };
