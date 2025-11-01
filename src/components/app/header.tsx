@@ -3,7 +3,6 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import Image from 'next/image';
 import { ThemeToggleButton } from '../theme-toggle-button';
 import { BrainCircuit } from 'lucide-react';
-import ChatPanel from './chat-panel';
 
 export default function AppHeader() {
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
@@ -19,7 +18,6 @@ export default function AppHeader() {
             </h1>
           </div>
           <div className="flex items-center gap-2">
-            <ChatPanel />
             <ThemeToggleButton />
           </div>
         </div>

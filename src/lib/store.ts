@@ -13,6 +13,7 @@ import type {
   ChatMessage,
   AppStore,
   Feature,
+  Doubt,
 } from '@/lib/types';
 
 const allFeatures: Feature[] = ['summary', 'explanation', 'flashcards', 'quiz', 'timeline'];
@@ -116,7 +117,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
   },
 
   sendChatMessage: async (message) => {
-    const userMessage: ChatMessage = { role: 'user', content: message };
+    const userMessage: ChatMessage = { role: 'user', content: { answer: message, timestamp: null, seconds: null, chapter: null } };
     set((state) => ({ 
       chatHistory: [...state.chatHistory, userMessage],
       isLoading: { ...state.isLoading, chat: true },
@@ -126,13 +127,27 @@ export const useAppStore = create<AppStore>((set, get) => ({
     try {
       const { transcript, chatHistory } = get();
       if (!transcript) throw new Error('No transcript available for chat.');
-
-      const response = await getChatReplyAction(chatHistory.slice(0, -1), message, transcript);
+      
+      const response: Doubt = await getChatReplyAction(
+        // We need to simplify the history for the AI
+        chatHistory.slice(0, -1).map(h => ({ role: h.role, content: h.content.answer })),
+        message, 
+        transcript
+      );
+      
       const assistantMessage: ChatMessage = { role: 'assistant', content: response };
       set((state) => ({ chatHistory: [...state.chatHistory, assistantMessage] }));
 
     } catch (e: any) {
-      const errorMessage: ChatMessage = { role: 'assistant', content: `Error: ${e.message || 'Failed to get a response.'}` };
+      const errorMessage: ChatMessage = { 
+        role: 'assistant', 
+        content: {
+          answer: `Error: ${e.message || 'Failed to get a response.'}`,
+          timestamp: null,
+          seconds: null,
+          chapter: null,
+        }
+      };
       set((state) => ({ chatHistory: [...state.chatHistory, errorMessage] }));
     } finally {
       set((state) => ({ isLoading: { ...state.isLoading, chat: false }}));

@@ -2,64 +2,73 @@
 /**
  * @fileOverview Implements the AI Chat Tutor flow for answering user questions about a given transcript.
  *
- * - chatReply - An async function that takes chat history and a user message, then returns an AI-generated response.
+ * - askDoubt - An async function that takes chat history and a user message, then returns an AI-generated response.
  * - ChatReplyInput - The input type for the chatReply function, including chat history and the user message.
- * - ChatReplyOutput - The output type for the chatReply function, which is a string containing the AI's reply.
  */
 
 import {ai} from '@/ai/genkit';
+import {DoubtSchema} from '@/lib/types';
 import {z} from 'genkit';
+import type {Doubt} from '@/lib/types';
 
 const ChatReplyInputSchema = z.object({
-  history: z.array(
-    z.object({
-      role: z.enum(['user', 'assistant']),
-      content: z.string(),
-    })
-  ).describe('The chat history between the user and the AI.'),
+  history: z
+    .array(
+      z.object({
+        role: z.enum(['user', 'assistant']),
+        content: z.string(),
+      })
+    )
+    .describe('The chat history between the user and the AI.'),
   message: z.string().describe('The current message from the user.'),
   transcript: z.string().describe('The transcript of the YouTube video.'),
 });
 export type ChatReplyInput = z.infer<typeof ChatReplyInputSchema>;
 
-const ChatReplyOutputSchema = z.string().describe('The AI-generated reply to the user message.');
-export type ChatReplyOutput = z.infer<typeof ChatReplyOutputSchema>;
-
-export async function chatReply(input: ChatReplyInput): Promise<ChatReplyOutput> {
-  return chatReplyFlow(input);
+export async function askDoubt(input: ChatReplyInput): Promise<Doubt> {
+  return askDoubtFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'chatReplyPrompt',
-  input: {schema: ChatReplyInputSchema},
-  output: {schema: ChatReplyOutputSchema},
-  prompt: `You are a helpful AI tutor answering questions about a YouTube video transcript.
-  The transcript is as follows:
-  {{transcript}}
-
-  Here is the chat history:
-  {{#each history}}
-  {{#if (eq role \"user\")}}
-  User: {{content}}
-  {{else}}
-  Assistant: {{content}}
-  {{/if}}
-  {{/each}}
-
-  Now, respond to the following message from the user:
-  User: {{message}}
-  `,
-});
-
-const chatReplyFlow = ai.defineFlow(
+const askDoubtFlow = ai.defineFlow(
   {
-    name: 'chatReplyFlow',
+    name: 'askDoubtFlow',
     inputSchema: ChatReplyInputSchema,
-    outputSchema: ChatReplyOutputSchema,
+    outputSchema: DoubtSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
+  async ({transcript, message, history}) => {
+    const prompt = `You are an AI assistant helping a user understand a video transcript. Your goal is to answer their questions, find the most relevant timestamp, and identify the chapter.
+
+    Analyze the user's question and the provided transcript. Find the most relevant section in the transcript that answers the question.
+    
+    Based on that section, provide:
+    1. A concise, easy-to-understand answer.
+    2. The exact timestamp (e.g., "01:23" or "15:42" or "01:05:33"). Extract it directly. If no specific timestamp is relevant, return null for the timestamp, seconds, and chapter.
+    3. The total number of seconds for that timestamp.
+    4. The title of the chapter or section containing the answer, if chapters are present in the transcript.
+    
+    Here is the chat history:
+    {{#each history}}
+      {{#if (eq role "user")}}
+        User: {{content}}
+      {{else}}
+        Assistant: {{content}}
+      {{/if}}
+    {{/each}}
+
+    Transcript:
+    """
+    ${transcript}
+    """
+    
+    User's Question: "${message}"`;
+
+    const {output} = await ai.generate({
+      prompt,
+      model: 'googleai/gemini-2.0-flash',
+      output: {
+        schema: DoubtSchema,
+      },
+    });
     return output!;
   }
 );
-

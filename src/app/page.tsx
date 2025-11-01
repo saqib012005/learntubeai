@@ -7,10 +7,11 @@ import OutputSection from '@/components/app/output-section';
 import { useAppStore } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import ChatPanel from '@/components/app/chat-panel';
 
 export default function Home() {
-  const { transcript, setTranscript, generateAllFeatures, isLoading, youtubeUrl, setYoutubeUrl } = useAppStore();
+  const { transcript, generateAllFeatures, isLoading, youtubeUrl, setYoutubeUrl } = useAppStore();
 
   const isGenerating = Object.values(isLoading).some(val => val);
 
@@ -53,6 +54,14 @@ export default function Home() {
               </Button>
             </div>
           </div>
+          
+          {transcript && (
+            <>
+              <div className="my-8 border-t" />
+              <ChatPanel />
+            </>
+          )}
+
 
           <OutputSection />
         </div>

@@ -16,8 +16,9 @@ import {
   explainSimply,
 } from '@/ai/flows/explain-simply';
 import {
-  chatReply,
+  askDoubt,
 } from '@/ai/flows/ai-chat-tutor';
+import type { ChatMessage } from '@/lib/types';
 
 export async function generateSummaryAction(text: string) {
   return await summarizeLecture({ text });
@@ -41,9 +42,9 @@ export async function generateELI5Action(text: string) {
 }
 
 export async function getChatReplyAction(
-  history: any[],
+  history: ChatMessage[],
   message: string,
   transcript: string
 ) {
-  return await chatReply({ history, message, transcript });
+  return await askDoubt({ history, message, transcript });
 }
