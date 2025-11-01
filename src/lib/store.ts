@@ -6,6 +6,7 @@ import {
   generateTimelineAction,
   generateELI5Action,
   getChatReplyAction,
+  generateRoadmapAction,
 } from '@/app/actions';
 import type {
   Flashcard,
@@ -14,6 +15,7 @@ import type {
   AppStore,
   Feature,
   Doubt,
+  Roadmap,
 } from '@/lib/types';
 
 const allFeatures: Feature[] = ['summary', 'explanation', 'flashcards', 'quiz', 'timeline'];
@@ -28,6 +30,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
   timeline: [],
   explanation: '',
   chatHistory: [],
+  roadmapTopic: '',
+  roadmap: null,
   isFetchingTranscript: false,
   isLoading: {
     summary: false,
@@ -36,6 +40,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
     timeline: false,
     explanation: false,
     chat: false,
+    roadmap: false,
   },
   error: {
     transcript: null,
@@ -45,11 +50,13 @@ export const useAppStore = create<AppStore>((set, get) => ({
     timeline: null,
     explanation: null,
     chat: null,
+    roadmap: null,
   },
 
   // ACTIONS
   setYoutubeUrl: (youtubeUrl) => set({ youtubeUrl }),
   setTranscript: (transcript) => set({ transcript }),
+  setRoadmapTopic: (topic) => set({ roadmapTopic: topic }),
 
   generateFeature: async (feature, text) => {
     set({ isLoading: { ...get().isLoading, [feature]: true }, error: { ...get().error, [feature]: null } });
@@ -108,6 +115,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
         timeline: null,
         explanation: null,
         chat: null,
+        roadmap: get().error.roadmap,
       }
     });
 
@@ -129,7 +137,6 @@ export const useAppStore = create<AppStore>((set, get) => ({
       if (!transcript) throw new Error('No transcript available for chat.');
       
       const response: Doubt = await getChatReplyAction(
-        // We need to simplify the history for the AI
         chatHistory.slice(0, -1).map(h => ({ role: h.role, content: h.content.answer })),
         message, 
         transcript
@@ -151,6 +158,22 @@ export const useAppStore = create<AppStore>((set, get) => ({
       set((state) => ({ chatHistory: [...state.chatHistory, errorMessage] }));
     } finally {
       set((state) => ({ isLoading: { ...state.isLoading, chat: false }}));
+    }
+  },
+
+  generateRoadmap: async (topic) => {
+    set({
+      isLoading: { ...get().isLoading, roadmap: true },
+      error: { ...get().error, roadmap: null },
+      roadmap: null,
+    });
+    try {
+      const roadmapData = await generateRoadmapAction(topic);
+      set({ roadmap: roadmapData });
+    } catch (e: any) {
+      set({ error: { ...get().error, roadmap: e.message || 'Failed to generate roadmap.' } });
+    } finally {
+      set({ isLoading: { ...get().isLoading, roadmap: false } });
     }
   },
 }));

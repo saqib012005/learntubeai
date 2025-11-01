@@ -18,7 +18,8 @@ import {
 import {
   askDoubt,
 } from '@/ai/flows/ai-chat-tutor';
-import type { ChatMessage } from '@/lib/types';
+import { generateRoadmap } from '@/ai/flows/generate-roadmap';
+import type { ChatMessage, Roadmap } from '@/lib/types';
 
 export async function generateSummaryAction(text: string) {
   return await summarizeLecture({ text });
@@ -47,4 +48,8 @@ export async function getChatReplyAction(
   transcript: string
 ) {
   return await askDoubt({ history, message, transcript });
+}
+
+export async function generateRoadmapAction(topic: string): Promise<Roadmap> {
+    return await generateRoadmap({ topic });
 }
