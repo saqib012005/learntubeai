@@ -41,7 +41,7 @@ export async function getTranscript(url: string): Promise<string> {
   // Mock fetching logic
   console.log(`Fetching transcript for URL: ${url}`);
   // Basic URL validation
-  if (!url || !url.includes('youtube.com/watch?v=')) {
+  if (!url || (!url.includes('youtube.com/watch?v=') && !url.includes('youtu.be/'))) {
     throw new Error('Invalid YouTube URL provided.');
   }
 
