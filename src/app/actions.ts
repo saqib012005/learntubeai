@@ -7,12 +7,22 @@
 
 import {
   summarizeLecture,
+} from '@/ai/flows/summarize-lecture';
+import {
   createFlashcards,
+} from '@/ai/flows/create-flashcards';
+import {
   generateQuiz,
+} from '@/ai/flows/generate-quiz';
+import {
   timelineHighlights,
+} from '@/ai/flows/timeline-highlights';
+import {
   explainSimply,
+} from '@/ai/flows/explain-simply';
+import {
   chatReply,
-} from '@/ai/flows';
+} from '@/ai/flows/ai-chat-tutor';
 
 const sampleTranscript = `
 (0:00) - Welcome to our series on the wonders of the cosmos. Today, we're diving into black holes.
