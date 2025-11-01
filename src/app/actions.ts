@@ -29,7 +29,7 @@ export async function getTranscript(url: string): Promise<string> {
   try {
     const transcript = await YoutubeTranscript.fetchTranscript(url);
     if (!transcript || transcript.length === 0) {
-      throw new Error('No transcript found for this video. It might be disabled.');
+      throw new Error('No transcript found for this video. It might be disabled or not have subtitles.');
     }
     // Format the transcript with timestamps.
     return transcript.map(item => `(${(item.offset / 1000).toFixed(2)}) - ${item.text}`).join('\n');
