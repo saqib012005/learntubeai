@@ -33,8 +33,9 @@ export default function ChatPanel() {
   };
 
   const handleTimestampClick = (seconds: number | null) => {
-    if (seconds === null) return;
-    // We will implement video player seeking later
+    if (seconds === null || seconds === undefined) return;
+    // This is where video player seeking logic will be fully implemented.
+    // For now, it's a placeholder.
     console.log(`Jumping to ${seconds} seconds`);
   };
 

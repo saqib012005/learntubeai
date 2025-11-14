@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Copy, FlipHorizontal } from 'lucide-react';
+import { Copy } from 'lucide-react';
 import { copyToClipboard } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '../ui/scroll-area';
@@ -23,6 +23,17 @@ export default function OutputSection() {
       .then(() => toast({ title: 'Copied to clipboard!', description: `${featureName} has been copied.` }))
       .catch(() => toast({ variant: 'destructive', title: 'Failed to copy', description: 'Could not copy to clipboard.' }));
   };
+  
+  const getFeatureContent = (feature: typeof features[number]) => {
+    switch(feature) {
+      case 'summary': return summary;
+      case 'explanation': return explanation;
+      case 'quiz': return quiz;
+      case 'flashcards': return flashcards.length > 0 ? JSON.stringify(flashcards, null, 2) : '';
+      case 'timeline': return timeline.length > 0 ? JSON.stringify(timeline, null, 2) : '';
+      default: return '';
+    }
+  }
 
   const renderContent = (feature: typeof features[number]) => {
     if (isLoading[feature]) {
@@ -120,25 +131,22 @@ export default function OutputSection() {
         {features.map((feature) => {
           const content = renderContent(feature);
           if (!content) return null;
+          
+          const contentToCopy = getFeatureContent(feature);
+
           return (
             <TabsContent key={feature} value={feature}>
               <Card>
-                <CardHeader>
-                  <CardTitle className="capitalize flex justify-between items-center">
-                    {feature}
-                    <Button
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle className="capitalize">{feature}</CardTitle>
+                  <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleCopyToClipboard(
-                        feature === 'flashcards' ? JSON.stringify(flashcards, null, 2) :
-                        feature === 'timeline' ? JSON.stringify(timeline, null, 2) :
-                        (eval(feature) as string),
-                        feature
-                      )}
+                      onClick={() => handleCopyToClipboard(contentToCopy, feature)}
+                      disabled={!contentToCopy}
                     >
                       <Copy className="h-4 w-4" />
-                    </Button>
-                  </CardTitle>
+                  </Button>
                 </CardHeader>
                 <CardContent>
                   <ScrollArea className="h-96">
