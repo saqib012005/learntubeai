@@ -2,7 +2,7 @@
 
 import React from 'react';
 import AppHeader from '@/components/app/header';
-import TranscriptEditor from '@/components/app/transcript-editor';
+import TranscriptEditor from '@/components/app/transcript-editor-autofetch';
 import OutputSection from '@/components/app/output-section';
 import { useAppStore } from '@/lib/store';
 import { Button } from '@/components/ui/button';

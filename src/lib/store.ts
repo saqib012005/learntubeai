@@ -26,9 +26,11 @@ export const useAppStore = create<AppStore>((set, get) => ({
   // STATE
   youtubeUrl: '',
   transcript: '',
+  transcriptSegments: [],
+  selectedLanguages: ['en'],
   summary: '',
   flashcards: [],
-  quiz: '',
+  quiz: [],
   timeline: [],
   explanation: '',
   chatHistory: [],
@@ -62,6 +64,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
 
   // ACTIONS
   setYoutubeUrl: (youtubeUrl) => set({ youtubeUrl }),
+  setSelectedLanguages: (langs) => set({ selectedLanguages: langs }),
+  setTranscriptSegments: (segments) => set({ transcriptSegments: segments }),
   setTranscript: (transcript) => set({ transcript }),
   setRoadmapTopic: (topic) => set({ roadmapTopic: topic }),
   setCapturedFrame: (frame) => set({ capturedFrame: frame }),
@@ -139,7 +143,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
     set((state) => ({
       summary: '',
       flashcards: [],
-      quiz: '',
+      quiz: [],
       timeline: [],
       explanation: '',
       error: {
@@ -170,10 +174,14 @@ export const useAppStore = create<AppStore>((set, get) => ({
       const { transcript, chatHistory } = get();
       if (!transcript) throw new Error('No transcript available for chat.');
       
+      const { selectedLanguages } = get();
+      const preferredLang = Array.isArray(selectedLanguages) && selectedLanguages.length ? selectedLanguages[0] : undefined;
+
       const response: Doubt = await getChatReplyAction(
         chatHistory.slice(0, -1).map(h => ({ role: h.role, content: h.content.answer })),
-        message, 
-        transcript
+        message,
+        transcript,
+        preferredLang
       );
       
       const assistantMessage: ChatMessage = { role: 'assistant', content: response };

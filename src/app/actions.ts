@@ -30,7 +30,7 @@ export async function generateFlashcardsAction(text: string) {
   return await createFlashcards({ text });
 }
 
-export async function generateQuizAction(text: string): Promise<string> {
+export async function generateQuizAction(text: string) {
   const result = await generateQuiz({ text });
   return result.quiz;
 }
@@ -46,9 +46,10 @@ export async function generateELI5Action(text: string): Promise<{ explanation: s
 export async function getChatReplyAction(
   history: {role: 'user' | 'assistant', content: string}[],
   message: string,
-  transcript: string
+  transcript: string,
+  language?: string
 ): Promise<Doubt> {
-  return await askDoubt({ history, message, transcript });
+  return await askDoubt({ history, message, transcript, language });
 }
 
 export async function generateRoadmapAction(topic: string): Promise<Roadmap> {
@@ -58,4 +59,5 @@ export async function generateRoadmapAction(topic: string): Promise<Roadmap> {
 export async function analyzeImageAction(question: string, imageDataUri: string) {
   const result = await analyzeImage({ question, imageDataUri });
   return result.answer;
+
 }

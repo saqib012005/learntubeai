@@ -5,6 +5,14 @@ export type Flashcard = {
   answer: string;
 };
 
+export type QuizQuestion = {
+  type: 'multiple-choice' | 'short-answer' | 'true-false';
+  question: string;
+  options?: string[];
+  correctAnswer: string;
+  explanation: string;
+};
+
 export type TimelineEvent = {
   timestamp: string;
   highlight: string;
@@ -69,9 +77,11 @@ export type AppStore = {
   // State
   youtubeUrl: string;
   transcript: string;
+  transcriptSegments: Array<{ text: string; start?: number | null; duration?: number | null }>;
+  selectedLanguages: string[];
   summary: string;
   flashcards: Flashcard[];
-  quiz: string;
+  quiz: QuizQuestion[];
   timeline: TimelineEvent[];
   explanation: string;
   chatHistory: ChatMessage[];
@@ -87,6 +97,8 @@ export type AppStore = {
   // Actions
   setYoutubeUrl: (url: string) => void;
   setTranscript: (transcript: string) => void;
+  setTranscriptSegments: (segments: Array<{ text: string; start?: number | null; duration?: number | null }>) => void;
+  setSelectedLanguages: (langs: string[]) => void;
   generateFeature: (feature: Feature, text?: string) => Promise<void>;
   generateAllFeatures: () => Promise<void>;
   sendChatMessage: (message: string) => Promise<void>;

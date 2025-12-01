@@ -34,11 +34,33 @@ const prompt = ai.definePrompt({
   name: 'createFlashcardsPrompt',
   input: {schema: CreateFlashcardsInputSchema},
   output: {schema: CreateFlashcardsOutputSchema},
-  prompt: `You are an expert educator. Your task is to generate flashcards from the given text to help students memorize key information. The flashcards should be in question-answer format.
+  prompt: `You are an expert educational content creator specializing in creating effective study materials. Your task is to generate high-quality flashcards from the provided text.
 
-Text: {{{text}}}
+REQUIREMENTS:
+1. Create 15-20 flashcards covering the most important concepts and facts
+2. Questions should test understanding, not just memorization
+3. Answers should be concise (1-3 sentences), clear, and accurate
+4. Use progressively harder questions (start with basic concepts, move to advanced)
+5. Include both definitional and application-based questions
+6. Avoid overly complex or ambiguous questions
+7. Ensure each Q&A pair is self-contained and meaningful
 
-Flashcards:`,
+GUIDELINES FOR QUESTIONS:
+- Use various question types: "What is...", "How does...", "Why...", "Explain...", "What are the key..."
+- Make questions specific and clear, not vague
+- Avoid yes/no questions; use open-ended format
+
+GUIDELINES FOR ANSWERS:
+- Start directly with the answer (no "The answer is...")
+- Use simple, clear language
+- Include key terms and definitions where applicable
+- Be comprehensive but concise (1-3 sentences max)
+- Provide context when needed
+
+TEXT TO EXTRACT FLASHCARDS FROM:
+{{{text}}}
+
+Generate 15-20 high-quality flashcards in the format specified above.`,
 });
 
 const createFlashcardsFlow = ai.defineFlow(

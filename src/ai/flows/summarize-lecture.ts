@@ -29,7 +29,21 @@ const summarizeLecturePrompt = ai.definePrompt({
   name: 'summarizeLecturePrompt',
   input: {schema: SummarizeLectureInputSchema},
   output: {schema: SummarizeLectureOutputSchema},
-  prompt: `Summarize the following lecture transcript, providing a concise overview of the video's main points. Aim for a summary that captures the essence of the lecture in a clear and understandable manner.\n\nTranscript: {{{text}}}`,
+  prompt: `You are an expert educator. Create a comprehensive, detailed summary (approximately 1 page) of the following lecture transcript. Structure your summary as follows:
+
+1. **Overview**: Start with 2-3 sentences explaining what the lecture is about.
+
+2. **Key Concepts**: List and explain 5-8 main concepts or topics covered, each in 2-3 sentences using simple, easy-to-understand language.
+
+3. **Main Points**: Provide 8-10 bullet points summarizing the most important takeaways.
+
+4. **Practical Applications**: Explain how these concepts can be applied in real life or why they matter (2-3 sentences).
+
+5. **Conclusion**: Summarize the overall message of the lecture in 2-3 sentences.
+
+Use simple language, avoid jargon, and make it engaging. Aim for approximately 1 full page of detailed, well-organized content.
+
+Transcript: {{{text}}}`,
 });
 
 const summarizeLectureFlow = ai.defineFlow(
